@@ -8,13 +8,20 @@ using UnityEngine;
 public class UM_Launch : MonoBehaviour
 {
     [SerializeField] private CCFModelControl modelControl;
-    [SerializeField] private UM_CameraController cameraController;
+    [SerializeField] private BrainCameraController cameraController;
     [SerializeField] private float maxExplosion = 10f;
+
+    [SerializeField] private GameObject settingsPanel;
+    [SerializeField] private Transform brainControlsT;
 
     [SerializeField] private GameObject consolePanel;
     [SerializeField] private TextMeshProUGUI consoleText;
 
     [SerializeField] private bool loadDefaults;
+
+    // Axes + Grid
+    [SerializeField] private GameObject axesGO;
+    [SerializeField] private GameObject gridGO;
 
     // Exploding
     [Range(0,1), SerializeField] private float percentageExploded = 0f;
@@ -24,18 +31,28 @@ public class UM_Launch : MonoBehaviour
 
     private Vector3 center = new Vector3(5.7f, 4f, -6.6f);
 
+    // Neuron materials
+    [SerializeField] private Dictionary<string, Material> neuronMaterials;
+
     // Colormaps
     private List<Converter<float, Color>> colormaps;
-    [SerializeField] private List<string> colormapOptions;
+    private List<string> colormapOptions = new List<string>{"cool","gray","grey-green","grey-purple","grey-red"};
     private Converter<float, Color> activeColormap;
+
+    // Starting colors
     private Vector3 teal = new Vector3(0f, 1f, 1f);
     private Vector3 magenta = new Vector3(1f, 0f, 1f);
+    private Vector3 lightgreen = new Vector3(14f / 255f, 1f, 0f);
+    private Vector3 darkgreen = new Vector3(6f / 255f, 59 / 255f, 0f);
+    private Vector3 lightpurple = new Vector3(202f / 255f, 105f / 255f, 227f / 255f);
+    private Vector3 darkpurple = new Vector3(141f / 255f, 10f / 255f, 157f / 255f);
+    private Vector3 lightred = new Vector3(1f, 165f / 255f, 0f);
+    private Vector3 darkred = new Vector3(1f, 0f, 0f);
 
     private int[] cosmos = { 315, 698, 1089, 703, 623, 549, 1097, 313, 1065, 512 };
     private Dictionary<int, Vector3> cosmosMeshCenters;
     private Dictionary<int, Vector3> originalTransformPositionsLeft;
     private Dictionary<int, Vector3> originalTransformPositionsRight;
-    private Dictionary<int, Vector3> nodeMeshCenters;
     private Dictionary<int, Vector3> cosmosVectors;
     
     private Dictionary<int, CCFTreeNode> visibleNodes;
@@ -51,12 +68,14 @@ public class UM_Launch : MonoBehaviour
     {
         colormaps = new List<Converter<float, Color>>();
         colormaps.Add(Cool);
-        colormaps.Add(Gray);
+        colormaps.Add(Grey);
+        colormaps.Add(GreyGreen);
+        colormaps.Add(GreyPurple);
+        colormaps.Add(GreyRed);
         activeColormap = Cool;
 
         originalTransformPositionsLeft = new Dictionary<int, Vector3>();
         originalTransformPositionsRight = new Dictionary<int, Vector3>();
-        nodeMeshCenters = new Dictionary<int, Vector3>();
 
         visibleNodes = new Dictionary<int, CCFTreeNode>();
 
@@ -137,14 +156,37 @@ public class UM_Launch : MonoBehaviour
         {
             consolePanel.SetActive(!consolePanel.activeSelf);
         }
+
+        // Check for key down events
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            // Hacky workaround because the brain controls doesn't attach to the UI element properly
+            if (settingsPanel.activeSelf)
+                brainControlsT.localPosition = new Vector3(-82.3f, -85.6f, 0f);
+            else
+                brainControlsT.localPosition = new Vector3(20.2f, -85.6f, 0f);
+            settingsPanel.SetActive(!settingsPanel.activeSelf);
+        }
+
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            axesGO.SetActive(!axesGO.activeSelf);
+        }
+
+        if (Input.GetKeyDown(KeyCode.G))
+        {
+            gridGO.SetActive(!gridGO.activeSelf);
+        }
     }
 
     public void RegisterNode(CCFTreeNode node)
     {
-        originalTransformPositionsLeft.Add(node.ID, node.LeftGameObject().transform.localPosition);
-        originalTransformPositionsRight.Add(node.ID, node.RightGameObject().transform.localPosition);
-        nodeMeshCenters.Add(node.ID, node.GetMeshCenter());
-        visibleNodes.Add(node.ID,node);
+        if (!originalTransformPositionsLeft.ContainsKey(node.ID))
+            originalTransformPositionsLeft.Add(node.ID, node.LeftGameObject().transform.localPosition);
+        if (!originalTransformPositionsRight.ContainsKey(node.ID))
+            originalTransformPositionsRight.Add(node.ID, node.RightGameObject().transform.localPosition);
+        if (!visibleNodes.ContainsKey(node.ID))
+            visibleNodes.Add(node.ID,node);
     }
 
     public Color GetColormapColor(float perc)
@@ -163,14 +205,49 @@ public class UM_Launch : MonoBehaviour
     // [TODO] Refactor colormaps into their own class
     public Color Cool(float perc)
     {
+        perc = CheckColormapRange(perc);
         Vector3 colorVector = Vector3.Lerp(teal, magenta, perc);
         return new Color(colorVector.x, colorVector.y, colorVector.z, 1f);
     }
 
-    public Color Gray(float perc)
+    public Color Grey(float perc)
     {
+        perc = CheckColormapRange(perc);
         Vector3 colorVector = Vector3.Lerp(Vector3.zero, Vector3.one, perc);
         return new Color(colorVector.x, colorVector.y, colorVector.z, 1f);
+    }
+
+    public Color GreyGreen(float perc)
+    {
+        perc = CheckColormapRange(perc);
+        return GreyGradient(perc, lightgreen, darkgreen);
+    }
+    public Color GreyPurple(float perc)
+    {
+        perc = CheckColormapRange(perc);
+        return GreyGradient(perc, lightpurple, darkpurple);
+    }
+
+    public Color GreyRed(float perc)
+    {
+        perc = CheckColormapRange(perc);
+        return GreyGradient(perc, lightred, darkred);
+    }
+
+    public float CheckColormapRange(float perc)
+    {
+        return Mathf.Clamp(perc, 0, 1);
+    }
+
+    public Color GreyGradient(float perc, Vector3 lightcolor, Vector3 darkcolor)
+    {
+        if (perc == 0)
+            return Color.grey;
+        else
+        {
+            Vector3 colorVector = Vector3.Lerp(lightcolor, darkcolor, perc);
+            return new Color(colorVector.x, colorVector.y, colorVector.z, 1f);
+        }
     }
 
     public void Log(string text)
@@ -186,43 +263,24 @@ public class UM_Launch : MonoBehaviour
         _UpdateExploded();
     }
 
-    public void SetLeftColorOnly(bool state)
-    {
-        colorLeftOnly = state;
-        if (colorLeftOnly)
-        {
-            Debug.Log("Doing the thing");
-            foreach (CCFTreeNode node in visibleNodes.Values)
-            {
-                Debug.Log(node.GetColor());
-                Debug.Log(node.GetDefaultColor());
-                node.SetColorOneSided(node.GetColor(), true);
-            }
-        }
-        else
-        {
-            Debug.Log("Reversing the thing");
-            foreach (CCFTreeNode node in visibleNodes.Values)
-            {
-                node.SetColor(node.GetColor());
-            }
-        }
-    }
-
-    public bool GetLeftColorOnly()
-    {
-        return colorLeftOnly;
-    }
-
     public void UpdateExploded(float newPercExploded)
     {
         percentageExploded = newPercExploded;
         _UpdateExploded();
     }
 
+    public void SetLeftColorOnly(bool state)
+    {
+        foreach (CCFTreeNode node in visibleNodes.Values)
+            if (state)
+                node.SetColorOneSided(node.GetDefaultColor(), false, false);
+            else
+                node.SetColorOneSided(node.GetColor(), false, false);
+    }
+
     private void _UpdateExploded()
     {
-        cameraController.BlockDragging();
+        cameraController.SetControlBlock(true);
 
         Vector3 flipVector = new Vector3(1f, 1f, -1f);
 
@@ -250,5 +308,16 @@ public class UM_Launch : MonoBehaviour
     public void UpdateDataIndex(float newIdx)
     {
         Debug.Log(newIdx);
+    }
+
+    /// <summary>
+    /// Switch the main camera to perspective (or back to orthographic, the default)
+    /// 
+    /// Note: you can't view the volumetric data in the orthographic camera, hence this setting to switch back and forth
+    /// </summary>
+    /// <param name="perspective"></param>
+    public void SwitchCameraMode(bool perspective)
+    {
+        
     }
 }

@@ -21,8 +21,8 @@ MonoBehaviour:
     m_Address: Assets/AddressableAssets/3D/mouseSkull_lowPoly.obj
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: 523f4b2aa92687c4ca463a70e7e8fdd2
-    m_Address: Assets/AddressableAssets/AllenCCF/ontology_structure_minimal.csv
+  - m_GUID: 9555d08e41ee965478cc913bf7989727
+    m_Address: Assets/AddressableAssets/bwm_trajectory_data.csv
     m_ReadOnly: 0
     m_SerializedLabels: []
   m_ReadOnly: 0

@@ -5,8 +5,8 @@
 **/[Ll]ibrary/
 **/[Tt]emp/
 **/[Oo]bj/
-**/[Bb]uild/
-**/[Bb]uilds/
+**/UnityClient/[Bb]uild/
+**/UnityClient/[Bb]uilds/
 **/[Ll]ogs/
 **/[Mm]emoryCaptures/
 
@@ -66,3 +66,12 @@ crashlytics-build.properties
 **/Server/node_modules/
 *.pyc
 Examples/.ipynb_checkpoints/*
+UnityClient/docs/*
+
+Examples/data/steven/*nrrd
+Examples/data/steven/*tif
+Examples/data/gaelle/coverage.npy
+
+unityneuro.egg-info/*
+dist/*
+build/*
