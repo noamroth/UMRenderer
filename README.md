@@ -2,9 +2,9 @@
 urchin
 ========================================
 
-[![PyPI Version](https://img.shields.io/pypi/v/unityneuro.svg)](https://pypi.org/project/unityneuro/)
+[![PyPI Version](https://img.shields.io/pypi/v/oursin.svg)](https://pypi.org/project/oursin/)
 
-Urchin (Unity Renderer for Neuroscience) is a python package that links your analysis scripts to a standalone brain renderer program, to create graphics like the ones below.
+Universal Renderer Creating Helpful Images for Neuroscience (Urchin) is a python package that links your analysis scripts to a standalone brain renderer program, to create graphics like the ones below.
 
 # Gallery
 <p float="left">
@@ -19,31 +19,39 @@ Urchin (Unity Renderer for Neuroscience) is a python package that links your ana
 
 # Quickstart
 
-To install the package run `pip install unityneuro`. To get started open a Python terminal and run:
+To install the package run `pip install oursin`. To get started open a Python terminal and run:
 
 ```
-import unityneuro.render as urn
-urn.setup()
+import oursin as urchin
+urchin.setup()
 ```
 
-A few quick examples to get you started.
+## Examples
+
+Head over to [Examples/basics](https://github.com/VirtualBrainLab/Urchin/tree/main/Examples/basics) to find many tutorials that introduce the functionality in Urchin.
+
+To get you started, try running the code below to load the root brain model. 
 
 ### Render all Allen CCF areas
 ```
-urn.load_beryl_areas()
+urchin.ccf.load_beryl()
 ```
 
-### Load the basic 3D model of the brain and make it transparent
+### Render the root area
 ```
-urn.set_area_visibility({"grey":True})
-urn.set_area_material({"grey":"transparent-lit"})
-urn.set_area_alpha({"grey":0.25})
+urchin.ccf.set_visibility({"grey":True})
+urchin.ccf.set_material({"grey":"transparent-lit"})
+urchin.ccf.set_alpha({"grey":0.25})
 ```
 
 # Documentation
 
-For detailed instructions please see the [documentation](https://virtualbrainlab.org/build/html/03_unity_neuro/01_urn_intro.html).
+For detailed instructions please see the [documentation](https://virtualbrainlab.org/urchin/installation_and_use.html).
 
 # Citing
 
-If you use this to make figures for a publication you should cite this repo, email me (dbirman@uw.edu) and I can generate a DOI for the version you are using.
+[![DOI](https://zenodo.org/badge/460577328.svg)](https://zenodo.org/badge/latestdoi/460577328)
+
+If Urchin is used as part of a research project you should cite this repository. We've created a DOI for this purpose on Zenodo. Your citations will help us get grant support for this project in the future!
+
+These materials are not sponsored by or affiliated with Unity Technologies or its affiliates. “Unity” is a trademark or registered trademark of Unity Technologies or its affiliates in the U.S. and elsewhere.

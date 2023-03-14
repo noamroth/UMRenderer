@@ -60,6 +60,7 @@ crashlytics-build.properties
 
 **/Assets/Resources/*
 **/Assets/AddressableAssets/*
+**/Assets/Best HTTP/*
 **/ServerData/*
 **/ServerData.zip
 
@@ -73,5 +74,19 @@ Examples/data/steven/*tif
 Examples/data/gaelle/coverage.npy
 
 unityneuro.egg-info/*
-dist/*
+**/dist/*
 build/*
+
+**/.ipynb_checkpoints/**
+**/imgs/*
+
+urchin-vn/*
+UnityClient/UserSettings/Layouts/default-2021.dwlt
+
+Examples/bwm_peth/data/*
+
+urchin-venv/*
+API/urchin-venv/*
+Examples/steinmetz_3dvol_test/testwf4.npy
+Examples/bwm_coverage/lab_clusters.csv
+Examples/lozano/channel_locations.json
